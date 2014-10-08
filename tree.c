@@ -63,6 +63,84 @@ void TreeBalance(Node * root){
 	return;
 }
 
+void TreeBalance2(Node * root){
+	
+	if(root == NULL) return;
+	if(root->lc != NULL && root->rc == NULL){
+		root->rc = NodeNew();
+		root->rc->nh = root->nh;
+	}
+	else if(root->lc == NULL && root->rc != NULL){
+		root->lc = NodeNew();
+		root->lc->nh = root->nh;
+	}
+
+	TreeBalance(root->lc);
+	TreeBalance(root->rc);
+
+	return;
+}
+
+void TreeCompress2(Node * root, Node * p){
+	
+	if(root == NULL) return;
+	if(root->lc != NULL && root->lc->nh == -1)
+		root->lc->nh = root->nh;
+	if(root->rc != NULL && root->rc->nh == -1) 
+		root->rc->nh = root->nh;
+
+	TreeCompress2(root->lc, root);
+	TreeCompress2(root->rc, root);
+
+	if ( (root->lc != NULL) || (root->rc != NULL))
+		return;
+
+	if(root->nh == p->nh){
+		printf("apaguei root->nh:%d\n",root->nh);
+		if(root == p->lc)
+			p->lc = NULL;
+		else p->rc = NULL;
+		free(root);
+	}
+
+	return;
+}
+
+void TreeCompressBalance(Node * root, Node * p){
+	
+	if(root == NULL) return;
+	if(root->lc != NULL && root->lc->nh == -1)
+		root->lc->nh = root->nh;
+	if(root->rc != NULL && root->rc->nh == -1) 
+		root->rc->nh = root->nh;
+
+	TreeCompressBalance(root->lc, root);
+	TreeCompressBalance(root->rc, root);
+
+	if ( (root->lc != NULL) && (root->rc != NULL))
+		return;
+
+	if(root->lc != NULL && root->rc == NULL){
+		root->rc = NodeNew();
+		root->rc->nh = root->nh;
+	}
+	else if(root->lc == NULL && root->rc != NULL){
+		root->lc = NodeNew();
+		root->lc->nh = root->nh;
+	}
+
+	else if(root->nh == p->nh){
+		printf("apaguei root->nh:%d\n",root->nh);
+		if(root == p->lc)
+			p->lc = NULL;
+		else p->rc = NULL;
+		free(root);
+	}
+
+	return;
+}
+
+
 int TreeNextHop(Node * root, char pref[9]){
 	
 	int i;
@@ -91,19 +169,36 @@ void Preorder(Node * root){
 	return;
 }
 
+/*void TreeCompress(Node * root, Node * p){  p - parent de root 
+	if (root != NULL){
+		TreeCompress(root->lc,root);
+		TreeCompress(root->rc,root);
+
+		if ( (root->lc != NULL) || (root->rc != NULL))
+			return;
+
+		if(root->nh == p->nh)
+			free(root);
+			printf("apaguei root->nh:%d\n",root->nh);
+	}
+
+	return;
+}
+*/
+
 
 int main(){
 	Node * root = NodeNew();
 
-	Line linha1 = {"01",1};
+	Line linha1 = {"00",2};
 	Line linha2 = {"10",2};
-	Line linha3 = {"11",3};
+	Line linha3 = {"11",4};
 	Line linha4 = {"110",4};
 	/*Line linha5 = {"*", 10};*/
 
 	char pref[9];
 
-	root->nh = 10;
+	root->nh = 1;
 	
 	TreeInsert(root,linha1);
 	TreeInsert(root,linha2);
@@ -113,10 +208,27 @@ int main(){
 	printf("árvore antes\n");
 	Preorder(root);
 
-	i = 0;
+	/*i = 0;
 	printf("árvore depois\n");
 	TreeBalance(root);
 	Preorder(root);
+	
+
+	i = 0;
+	printf("árvore depois comprimida\n");
+	TreeCompress2(root,NULL);
+	Preorder(root);
+
+	i = 0;
+	printf("árvore depois comprimida e balanceada\n");
+	TreeBalance2(root);
+	Preorder(root);
+*/
+	i = 0;
+	printf("árvore depois comprimida e balanceada\n");
+	TreeCompressBalance(root, NULL);
+	Preorder(root);
+
 
 	while(1){
 		printf("Inserir prefixo: ");
