@@ -86,12 +86,8 @@ void TreeCompressBalance(Node * root, Node * p){
 *Imprime a tabela de expedição
 */
 void TablePrint(Node * root, Node * p, char * str, int * index){
-	
-	if(root == NULL){
-		(*index)--;		
-		return;
-	}
 
+	(*index)++;
 	if(p == NULL){
 	 	if(root->nh != -1) printf("* -> %d\n", root->nh);
 	}
@@ -100,13 +96,13 @@ void TablePrint(Node * root, Node * p, char * str, int * index){
 		printf("%s -> %d\n", str, root->nh);
 	}
 
-	str[*index] = '0';
-	++(*index);
-	TablePrint(root->lc, root, str, index);
+	if(root->lc != NULL){
+		str[*index] = '0';
+		TablePrint(root->lc, root, str, index);	
 
-	str[*index] = '1';
-	++(*index);
-	TablePrint(root->rc, root, str, index);
+		str[*index] = '1';
+		TablePrint(root->rc, root, str, index);
+	}
 
 	(*index)--;	
 	
@@ -198,7 +194,7 @@ int main(int argc, char * argv[]){
 	TreeBuild(root,argv[1]);
 	TreeCompressBalance(root, NULL);
 
-	index = 0;
+	index = -1;
 	printf("Tabela comprimida:\n\n");
 	TablePrint(root, NULL, &string[0], &index);
 	printf("\n");
